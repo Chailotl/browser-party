@@ -1,0 +1,136 @@
+<div id="roomCode"></div>
+<div id="joinScreen">
+	<label for="nameInput">Name</label><br>
+	<input id="nameInput" placeholder="Enter your name" oninput="updateBtn()">
+	<br><br>
+	<button id="createRoom" disabled onclick="createRoom()">Create Room</button>
+	<button id="joinRoom" disabled onclick="joinRoom()">Join Room</button>
+</div>
+<br>
+<div id="playerList"></div>
+<br>
+<div id="gameScreen" style="display: none">
+	<div id="chatOutput"></div>
+	<input id="chatInput" onkeypress="sendChatMessage(event)">
+</div>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+	var joinScreen = document.getElementById('joinScreen');
+	var gameScreen = document.getElementById('gameScreen');
+	var roomCodeDiv = document.getElementById('roomCode');
+	var playerList = document.getElementById('playerList');
+
+	var nameInput = document.getElementById('nameInput');
+	var createRoomBtn = document.getElementById('createRoom');
+	var joinRoomBtn = document.getElementById('joinRoom');
+
+	var chatOutput = document.getElementById('chatOutput');
+	var chatInput = document.getElementById('chatInput');
+
+	var socket = io('ws://localhost:22222');
+
+	var game = 'spyfall';
+	var players = [];
+
+	// Room code received when creating a room
+	socket.on('joinedRoom', arg =>
+	{
+		roomCodeDiv.innerText = arg;
+		joinScreen.style.display = 'none';
+		gameScreen.style.display = '';
+	});
+
+	// Invalid room code
+	socket.on('invalidRoom', arg =>
+	{
+		alert('Invalid room code');
+	});
+
+	// Player list received when joining a room
+	socket.on('playerList', arg =>
+	{
+		players = arg;
+		updatePlayerList();
+	});
+
+	// A player joined the room
+	socket.on('playerJoin', arg =>
+	{
+		players.push(arg);
+		updatePlayerList();
+	});
+
+	// A player left the room, so remove them from the list
+	socket.on('playerLeave', arg =>
+	{
+		players = players.filter(ply => ply.id != arg);
+		updatePlayerList();
+	});
+
+	// A player renamed themselves
+	socket.on('playerRename', arg =>
+	{
+		players.map(ply =>
+		{
+			if (ply.id == arg.id)
+			{
+				ply.name = arg.name;
+			}
+		});
+		updatePlayerList();
+	});
+
+	// Data received from host
+	socket.on('data', arg =>
+	{
+		console.log(arg);
+	});
+
+	// Chat messages received from any player
+	socket.on('chat', arg =>
+	{
+		chatOutput.innerText += arg + '\n';
+	});
+
+	function updateBtn()
+	{
+		var nameless = nameInput.value == '';
+		createRoomBtn.disabled = nameless;
+		joinRoomBtn.disabled = nameless;
+	}
+
+	function createRoom()
+	{
+		socket.emit('createRoom', { game: game, name: nameInput.value });
+	}
+
+	function joinRoom()
+	{
+		var roomCode = window.prompt('Enter 4-letter room code').toUpperCase();
+
+		socket.emit('joinRoom', { game: game, code: roomCode, name: nameInput.value });
+	}
+
+	function updatePlayerList()
+	{
+		var str = '';
+
+		players.forEach(ply =>
+		{
+			str += ply.name + '\n';
+		});
+
+		playerList.innerText = str;
+	}
+
+	function sendChatMessage(event)
+	{
+		if (event.keyCode == 13)
+		{
+			chatOutput.innerText += nameInput.value + ': ' + chatInput.value + '\n';
+			socket.emit('chat', chatInput.value);
+			chatInput.value = '';
+		}
+	}
+</script>
