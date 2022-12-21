@@ -9,8 +9,11 @@
 <div id="roomScreen" style="display: none">
 	<b id="roomCode"></b>
 	<pre id="playerList"></pre>
-	<div id="chatOutput"></div>
+	<button onclick="">Ready Up</button>
+	<button disabled onclick="">Start Game</button>
+	<br><br>
 	<input id="chatInput" onkeypress="sendChatMessage(event)">
+	<div id="chatOutput"></div>
 </div>
 
 <div id="gameScreen" style="display: none">
@@ -145,7 +148,7 @@
 	{
 		if (event.keyCode == 13)
 		{
-			chatOutput.innerText += nameInput.value + ': ' + chatInput.value + '\n';
+			chatOutput.innerText = nameInput.value + ': ' + chatInput.value + '\n' + chatOutput.innerText;
 			socket.emit('chat', chatInput.value);
 			chatInput.value = '';
 		}
