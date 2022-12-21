@@ -40,7 +40,7 @@
 
 	var game = 'spyfall';
 	var players = [];
-	var host = false;
+	var player = undefined;
 
 	// Joined the room
 	socket.on('joinedRoom', arg =>
@@ -56,6 +56,9 @@
 	// Denied joining room
 	socket.on('kicked', arg =>
 	{
+		playerList = [];
+		player = undefined;
+		updatePlayerList();
 		alert(arg);
 	});
 
@@ -134,10 +137,10 @@
 		{
 			str += (ply.host ? '* ' : '  ') + ply.name + '\n';
 
-			// Am I the host?
+			// Find myself
 			if (ply.id == socket.id)
 			{
-				host = ply.host;
+				player = ply;
 			}
 		});
 
