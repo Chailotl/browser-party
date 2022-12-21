@@ -80,6 +80,19 @@
 		updatePlayerList();
 	});
 
+	// New player is the host
+	socket.on('playerHost', arg =>
+	{
+		players.map(ply =>
+		{
+			if (ply.id == arg)
+			{
+				ply.host = true;
+			}
+		});
+		updatePlayerList();
+	});
+
 	// Data received from host
 	socket.on('data', arg =>
 	{

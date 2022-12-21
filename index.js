@@ -180,4 +180,10 @@ function leaveRoom(socket)
 
 	// Clean up socket
 	socket.room = undefined;
+	// If host left, assign new host
+	if (room.host == socket)
+	{
+		room.host = room.players[0];
+		io.to(room.id).emit('playerHost', room.host.id);
+	}
 }
