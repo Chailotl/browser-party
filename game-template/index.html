@@ -13,6 +13,10 @@
 	<input id="chatInput" onkeypress="sendChatMessage(event)">
 </div>
 
+<div id="gameScreen" style="display: none">
+
+</div>
+
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
 	var screens = {
@@ -33,6 +37,7 @@
 
 	var game = 'spyfall';
 	var players = [];
+	var host = false;
 
 	// Joined the room
 	socket.on('joinedRoom', arg =>
@@ -83,10 +88,7 @@
 	{
 		players.map(ply =>
 		{
-			if (ply.id == arg)
-			{
-				ply.host = true;
-			}
+			ply.host = ply.id == arg;
 		});
 		updatePlayerList();
 	});
@@ -128,6 +130,12 @@
 		players.forEach(ply =>
 		{
 			str += (ply.host ? '* ' : '  ') + ply.name + '\n';
+
+			// Am I the host?
+			if (ply.id == socket.id)
+			{
+				host = ply.host;
+			}
 		});
 
 		playerList.innerText = str;
