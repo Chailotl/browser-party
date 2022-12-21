@@ -111,6 +111,23 @@
 		chatOutput.innerText += arg + '\n';
 	});
 
+	function send(event, data, id = undefined)
+	{
+		var packet = { packet: { ev: event, data: data } };
+
+		if (id) { packet.id = id; }
+
+		socket.emit('send', packet);
+	}
+
+	function sendAll(event, data)
+	{
+		if (host)
+		{
+			socket.emit('sendAll', { packet: { ev: event, data: data } });
+		}
+	}
+
 	function updateButtons()
 	{
 		var nameless = nameInput.value == '';
