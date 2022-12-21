@@ -51,7 +51,7 @@
 		initGame();
 
 		players = arg.players;
-		players.forEach(ply => initPlayer());
+		players.forEach(ply => initPlayer(ply));
 		updatePlayerList();
 	});
 
@@ -198,20 +198,12 @@
 
 	function updatePlayerList()
 	{
-		var str = '';
-
-		players.forEach(ply =>
-		{
-			str += (ply.host ? '* ' : '  ') + ply.name + '\n';
-		});
-
-		playerList.innerText = str;
+		playerList.innerText = players.map(ply => (ply.host ? '* ' : '  ') + ply.name).join('\n');
 	}
 
 	function updateButtons()
 	{
-		var nameless = nameInput.value == '';
-		roomButtons.forEach(btn => btn.disabled = nameless);
+		roomButtons.forEach(btn => btn.disabled = nameInput.value == '');
 	}
 
 	function readyUp()
