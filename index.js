@@ -187,6 +187,7 @@ function leaveRoom(socket)
 	if (room.host == socket)
 	{
 		room.host = room.players[0];
+		room.host.host = true;
 		io.to(room.id).emit('playerHost', room.host.id);
 	}
 }
