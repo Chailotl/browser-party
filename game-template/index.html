@@ -9,7 +9,7 @@
 <div id="roomScreen" style="display: none">
 	<b id="roomCode"></b>
 	<pre id="playerList"></pre>
-	<button onclick="">Ready Up</button>
+	<button onclick="readyUp()">Ready Up</button>
 	<button disabled onclick="">Start Game</button>
 	<br><br>
 	<input id="chatInput" onkeypress="sendChatMessage(event)">
@@ -103,6 +103,25 @@
 	socket.on('receive', arg =>
 	{
 		console.log(arg);
+
+		if (player.host)
+		{
+			switch (arg.ev)
+			{
+				case 'ready':
+					sendAll('ready', { id: arg.id, state: arg.data });
+					break;
+			}
+		}
+		else
+		{
+			switch (arg.ev)
+			{
+				case 'ready':
+
+					break;
+			}
+		}
 	});
 
 	// Chat messages received from any player
@@ -113,18 +132,14 @@
 
 	function send(event, data, id = undefined)
 	{
-		var packet = { packet: { ev: event, data: data } };
-
-		if (id) { packet.id = id; }
-
-		socket.emit('send', packet);
+		socket.emit('send', { ev: event, data: data, id: id });
 	}
 
 	function sendAll(event, data)
 	{
-		if (host)
+		if (player.host)
 		{
-			socket.emit('sendAll', { packet: { ev: event, data: data } });
+			socket.emit('sendAll', { ev: event, data: data });
 		}
 	}
 
@@ -172,5 +187,10 @@
 			socket.emit('chat', chatInput.value);
 			chatInput.value = '';
 		}
+	}
+
+	function readyUp()
+	{
+		send('ready', true);
 	}
 </script>

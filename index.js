@@ -69,11 +69,12 @@ io.on('connection', socket =>
 
 		if (socket.host)
 		{
-			io.to(arg.id).emit('receive', arg.packet);
+			io.to(arg.id).emit('receive', arg);
 		}
 		else
 		{
-			io.to(socket.room.host.id).emit('receive', arg.packet);
+			arg.id = socket.id;
+			io.to(socket.room.host.id).emit('receive', arg);
 		}
 	});
 
@@ -81,7 +82,7 @@ io.on('connection', socket =>
 	{
 		if (!socket.room || !socket.host) { return; }
 
-		socket.to(socket.room.id).emit('data', arg);
+		socket.to(socket.room.id).emit('receive', arg);
 	});
 
 	socket.on('kick', arg =>
