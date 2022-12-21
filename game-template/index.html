@@ -120,7 +120,7 @@
 			switch (arg.ev)
 			{
 				case 'ready':
-
+					getPlayer(arg.data.id).ready = arg.data.state;
 					break;
 			}
 		}
@@ -216,6 +216,16 @@
 
 	function readyUp()
 	{
-		send('ready', true);
+		var ply = getPlayer();
+		ply.readyUp = !ply.readyUp;
+
+		if (ply.host)
+		{
+			sendAll('ready', { id: ply.id, state: ply.readyUp });
+		}
+		else
+		{
+			send('ready', ply.readyUp);
+		}
 	}
 </script>
