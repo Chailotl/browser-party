@@ -1,9 +1,9 @@
 <div id="joinScreen">
 	<label for="nameInput">Name</label><br>
-	<input id="nameInput" placeholder="Enter your name" oninput="updateBtn()">
+	<input id="nameInput" placeholder="Enter your name" oninput="updateButtons()">
 	<br><br>
-	<button id="createRoom" disabled onclick="createRoom()">Create Room</button>
-	<button id="joinRoom" disabled onclick="joinRoom()">Join Room</button>
+	<button class="roomBtn" disabled onclick="createRoom()">Create Room</button>
+	<button class="roomBtn" disabled onclick="joinRoom()">Join Room</button>
 </div>
 
 <div id="roomScreen" style="display: none">
@@ -22,8 +22,7 @@
 	}
 
 	var nameInput = document.getElementById('nameInput');
-	var createRoomBtn = document.getElementById('createRoom');
-	var joinRoomBtn = document.getElementById('joinRoom');
+	var roomButtons = document.querySelectorAll('.roomBtn');
 
 	var roomCodeDiv = document.getElementById('roomCode');
 	var playerList = document.getElementById('playerList');
@@ -104,11 +103,10 @@
 		chatOutput.innerText += arg + '\n';
 	});
 
-	function updateBtn()
+	function updateButtons()
 	{
 		var nameless = nameInput.value == '';
-		createRoomBtn.disabled = nameless;
-		joinRoomBtn.disabled = nameless;
+		roomButtons.forEach(btn => btn.disabled = nameless);
 	}
 
 	function createRoom()
