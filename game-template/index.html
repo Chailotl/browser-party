@@ -38,6 +38,8 @@
 
 	var socket = io('ws://localhost:22222');
 
+	var spyfall = fetch('./game_info.json').then(res => res.json());
+
 	var game = {};
 	var players = [];
 
@@ -137,6 +139,7 @@
 	{
 		game.location = '';
 		game.role = '';
+		game.validLocations = [];
 	}
 
 	// This will initialize a player
