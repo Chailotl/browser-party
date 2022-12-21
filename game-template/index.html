@@ -38,9 +38,8 @@
 
 	var socket = io('ws://localhost:22222');
 
-	var game = 'spyfall';
+	var game = {};
 	var players = [];
-	var player = undefined;
 
 	// Joined the room
 	socket.on('joinedRoom', arg =>
@@ -60,7 +59,6 @@
 	socket.on('kicked', arg =>
 	{
 		playerList = [];
-		player = undefined;
 		updatePlayerList();
 		alert(arg);
 	});
@@ -108,7 +106,7 @@
 	{
 		console.log(arg);
 
-		if (player.host)
+		if (getPlayer().host)
 		{
 			switch (arg.ev)
 			{
@@ -147,35 +145,55 @@
 		ply.readyUp = false;
 	}
 
+	// Create a new room
+	function createRoom()
+	{
+		socket.emit('createRoom', { game: 'spyfall', name: nameInput.value });
+	}
+
+	// Join an existing room
+	function joinRoom()
+	{
+		var roomCode = 'ABCD'; //window.prompt('Enter 4-letter room code').toUpperCase();
+
+		socket.emit('joinRoom', { game: 'spyfall', code: roomCode, name: nameInput.value });
+	}
+
+	// Send to the host or player
 	function send(event, data, id = undefined)
 	{
 		socket.emit('send', { ev: event, data: data, id: id });
 	}
 
+	// Send to all players
 	function sendAll(event, data)
 	{
-		if (player.host)
+		if (getPlayer().host)
 		{
 			socket.emit('sendAll', { ev: event, data: data });
 		}
 	}
 
-	function updateButtons()
+	// Send a chat message to all players
+	function sendChatMessage(event)
 	{
-		var nameless = nameInput.value == '';
-		roomButtons.forEach(btn => btn.disabled = nameless);
+		if (event.keyCode == 13)
+		{
+			chatOutput.innerText = nameInput.value + ': ' + chatInput.value + '\n' + chatOutput.innerText;
+			socket.emit('chat', chatInput.value);
+			chatInput.value = '';
+		}
 	}
 
-	function createRoom()
+	// Get a player object from a socket id
+	function getPlayer(id)
 	{
-		socket.emit('createRoom', { game: game, name: nameInput.value });
-	}
+		if (!id) { id = socket.id; }
 
-	function joinRoom()
-	{
-		var roomCode = window.prompt('Enter 4-letter room code').toUpperCase();
-
-		socket.emit('joinRoom', { game: game, code: roomCode, name: nameInput.value });
+		for (var ply of players)
+		{
+			if (ply.id == id) { return ply; }
+		}
 	}
 
 	function updatePlayerList()
@@ -185,25 +203,15 @@
 		players.forEach(ply =>
 		{
 			str += (ply.host ? '* ' : '  ') + ply.name + '\n';
-
-			// Find myself
-			if (ply.id == socket.id)
-			{
-				player = ply;
-			}
 		});
 
 		playerList.innerText = str;
 	}
 
-	function sendChatMessage(event)
+	function updateButtons()
 	{
-		if (event.keyCode == 13)
-		{
-			chatOutput.innerText = nameInput.value + ': ' + chatInput.value + '\n' + chatOutput.innerText;
-			socket.emit('chat', chatInput.value);
-			chatInput.value = '';
-		}
+		var nameless = nameInput.value == '';
+		roomButtons.forEach(btn => btn.disabled = nameless);
 	}
 
 	function readyUp()
