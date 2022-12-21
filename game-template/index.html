@@ -1,4 +1,3 @@
-<div id="roomCode"></div>
 <div id="joinScreen">
 	<label for="nameInput">Name</label><br>
 	<input id="nameInput" placeholder="Enter your name" oninput="updateBtn()">
@@ -6,10 +5,10 @@
 	<button id="createRoom" disabled onclick="createRoom()">Create Room</button>
 	<button id="joinRoom" disabled onclick="joinRoom()">Join Room</button>
 </div>
-<br>
-<div id="playerList"></div>
-<br>
+
 <div id="roomScreen" style="display: none">
+	<b id="roomCode"></b>
+	<pre id="playerList"></pre>
 	<div id="chatOutput"></div>
 	<input id="chatInput" onkeypress="sendChatMessage(event)">
 </div>
@@ -130,7 +129,7 @@
 
 		players.forEach(ply =>
 		{
-			str += ply.name + '\n';
+			str += (ply.host ? '* ' : '  ') + ply.name + '\n';
 		});
 
 		playerList.innerText = str;

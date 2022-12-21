@@ -162,24 +162,27 @@ function joinRoom(socket, arg)
 
 function leaveRoom(socket)
 {
-	if (!socket.room) { return; }
-
-	// Broadcast player leaving
-	socket.to(socket.room.id).emit('playerLeave', socket.id);
-	socket.leave(socket.room.id);
-
-	// Remove from player list
-	socket.room.players.splice(socket.room.players.indexOf(socket), 1);
-
-	// Remove room if empty
-	if (socket.room.players.length == 0)
-	{
-		var id = socket.room.id.split('-');
-		rooms[id[0]][id[1]] = undefined;
-	}
+	var room = socket.room;
+	if (!room) { return; }
 
 	// Clean up socket
 	socket.room = undefined;
+	socket.leave(room.id);
+
+	// Broadcast player leaving
+	socket.to(room.id).emit('playerLeave', socket.id);
+
+	// Remove from player list
+	room.players.splice(room.players.indexOf(socket), 1);
+
+	// Remove room if empty
+	if (room.players.length == 0)
+	{
+		var id = room.id.split('-');
+		rooms[id[0]][id[1]] = undefined;
+		return;
+	}
+
 	// If host left, assign new host
 	if (room.host == socket)
 	{
