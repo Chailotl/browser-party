@@ -87,6 +87,19 @@ io.on('connection', socket =>
 		socket.to(socket.room.id).emit('data', arg);
 	});
 
+	socket.on('kick', arg =>
+	{
+		if (!socket.room || !socket.host) { return; }
+
+		var player = io.sockets.sockets.get(arg.id);
+
+		if (player)
+		{
+			player.emit('kick', arg.msg);
+			leaveRoom(player);
+		}
+	});
+
 	socket.on('chat', arg =>
 	{
 		if (!socket.room) { return; }
@@ -127,7 +140,7 @@ function joinRoom(socket, arg)
 	// Invalid game or room
 	if (!rooms[arg.game] || !rooms[arg.game][arg.code])
 	{
-		socket.emit('deniedRoom', 'Invalid room code');
+		socket.emit('kicked', 'Invalid room code');
 		return;
 	}
 

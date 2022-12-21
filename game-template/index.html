@@ -46,7 +46,7 @@
 	});
 
 	// Denied joining room
-	socket.on('deniedRoom', arg =>
+	socket.on('kicked', arg =>
 	{
 		alert(arg);
 	});
