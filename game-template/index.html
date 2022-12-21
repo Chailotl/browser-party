@@ -9,7 +9,7 @@
 <br>
 <div id="playerList"></div>
 <br>
-<div id="gameScreen" style="display: none">
+<div id="roomScreen" style="display: none">
 	<div id="chatOutput"></div>
 	<input id="chatInput" onkeypress="sendChatMessage(event)">
 </div>
@@ -17,14 +17,15 @@
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
 	var joinScreen = document.getElementById('joinScreen');
+	var roomScreen = document.getElementById('roomScreen');
 	var gameScreen = document.getElementById('gameScreen');
-	var roomCodeDiv = document.getElementById('roomCode');
-	var playerList = document.getElementById('playerList');
 
 	var nameInput = document.getElementById('nameInput');
 	var createRoomBtn = document.getElementById('createRoom');
 	var joinRoomBtn = document.getElementById('joinRoom');
 
+	var roomCodeDiv = document.getElementById('roomCode');
+	var playerList = document.getElementById('playerList');
 	var chatOutput = document.getElementById('chatOutput');
 	var chatInput = document.getElementById('chatInput');
 
@@ -33,25 +34,21 @@
 	var game = 'spyfall';
 	var players = [];
 
-	// Room code received when creating a room
+	// Joined the room
 	socket.on('joinedRoom', arg =>
 	{
-		roomCodeDiv.innerText = arg;
+		roomCodeDiv.innerText = arg.code;
 		joinScreen.style.display = 'none';
-		gameScreen.style.display = '';
-	});
+		roomScreen.style.display = '';
 
-	// Invalid room code
-	socket.on('invalidRoom', arg =>
-	{
-		alert('Invalid room code');
-	});
-
-	// Player list received when joining a room
-	socket.on('playerList', arg =>
-	{
-		players = arg;
+		players = arg.players;
 		updatePlayerList();
+	});
+
+	// Denied joining room
+	socket.on('deniedRoom', arg =>
+	{
+		alert(arg);
 	});
 
 	// A player joined the room

@@ -127,7 +127,7 @@ function joinRoom(socket, arg)
 	// Invalid game or room
 	if (!rooms[arg.game] || !rooms[arg.game][arg.code])
 	{
-		socket.emit('invalidRoom');
+		socket.emit('deniedRoom', 'Invalid room code');
 		return;
 	}
 
@@ -147,8 +147,10 @@ function joinRoom(socket, arg)
 		room.host = socket;
 	}
 
-	socket.emit('joinedRoom', arg.code);
-	socket.emit('playerList', getPlayerList(room));
+	socket.emit('joinedRoom', {
+		code: arg.code,
+		players: getPlayerList(room)
+	});
 	socket.join(room.id);
 	socket.to(room.id).emit('playerJoin', { id: socket.id, name: socket.name });
 }
