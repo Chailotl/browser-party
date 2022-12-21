@@ -49,7 +49,10 @@
 		screens.join.style.display = 'none';
 		screens.room.style.display = '';
 
+		initGame();
+
 		players = arg.players;
+		players.forEach(ply => initPlayer());
 		updatePlayerList();
 	});
 
@@ -65,6 +68,7 @@
 	// A player joined the room
 	socket.on('playerJoin', arg =>
 	{
+		initPlayer(arg);
 		players.push(arg);
 		updatePlayerList();
 	});
@@ -129,6 +133,19 @@
 	{
 		chatOutput.innerText += arg + '\n';
 	});
+
+	// This will initialize the game state
+	function initGame()
+	{
+		game.location = '';
+		game.role = '';
+	}
+
+	// This will initialize a player
+	function initPlayer(ply)
+	{
+		ply.readyUp = false;
+	}
 
 	function send(event, data, id = undefined)
 	{
