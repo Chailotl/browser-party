@@ -16,9 +16,11 @@
 
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
-	var joinScreen = document.getElementById('joinScreen');
-	var roomScreen = document.getElementById('roomScreen');
-	var gameScreen = document.getElementById('gameScreen');
+	var screens = {
+		join: document.getElementById('joinScreen'),
+		room: document.getElementById('roomScreen'),
+		game: document.getElementById('gameScreen')
+	}
 
 	var nameInput = document.getElementById('nameInput');
 	var createRoomBtn = document.getElementById('createRoom');
@@ -38,8 +40,8 @@
 	socket.on('joinedRoom', arg =>
 	{
 		roomCodeDiv.innerText = arg.code;
-		joinScreen.style.display = 'none';
-		roomScreen.style.display = '';
+		screens.join.style.display = 'none';
+		screens.room.style.display = '';
 
 		players = arg.players;
 		updatePlayerList();

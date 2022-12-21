@@ -47,15 +47,11 @@ io.on('connection', socket =>
 		joinRoom(socket, arg);
 	});
 
-	socket.on('joinRoom', arg =>
-	{
-		joinRoom(socket, arg);
-	});
+	socket.on('joinRoom', arg => joinRoom(socket, arg));
 
-	socket.on('leaveRoom', () =>
-	{
-		leaveRoom(socket);
-	});
+	socket.on('leaveRoom', () => leaveRoom(socket));
+
+	socket.on('disconnect', () => leaveRoom(socket));
 
 	socket.on('playerRename', arg =>
 	{
@@ -66,6 +62,7 @@ io.on('connection', socket =>
 		}
 	});
 
+	// Room host events
 	socket.on('send', arg =>
 	{
 		if (!socket.room) { return; }
@@ -80,7 +77,7 @@ io.on('connection', socket =>
 		}
 	});
 
-	socket.on('broadcast', arg =>
+	socket.on('sendAll', arg =>
 	{
 		if (!socket.room || !socket.host) { return; }
 
@@ -106,11 +103,6 @@ io.on('connection', socket =>
 
 		socket.to(socket.room.id).emit('chat', socket.name + ': ' + arg);
 	});
-
-	socket.on('disconnect', () =>
-	{
-		leaveRoom(socket);
-	})
 });
 
 function getPlayerList(room)
