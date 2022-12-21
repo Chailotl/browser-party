@@ -69,11 +69,11 @@ io.on('connection', socket =>
 
 		if (socket.host)
 		{
-			io.to(arg.id).emit('data', arg.data);
+			io.to(arg.id).emit('receive', arg.packet);
 		}
 		else
 		{
-			io.to(socket.room.host.id).emit('data', arg.data);
+			io.to(socket.room.host.id).emit('receive', arg.packet);
 		}
 	});
 
