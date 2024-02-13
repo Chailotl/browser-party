@@ -102,7 +102,7 @@ io.on('connection', socket =>
 	{
 		if (!socket.room) { return; }
 
-		socket.to(socket.room.id).emit('chat', socket.name + ': ' + arg);
+		socket.to(socket.room.id).emit('chat', {id: socket.id, message: arg});
 	});
 });
 

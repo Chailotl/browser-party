@@ -131,7 +131,8 @@
 	// Chat messages received from any player
 	socket.on('chat', arg =>
 	{
-		chatOutput.innerText += arg + '\n';
+		
+		chatOutput.innerText = getPlayer(arg.id).name + ': ' + arg.message + '\n' + chatOutput.innerText;
 	});
 
 	// This will initialize the game state
